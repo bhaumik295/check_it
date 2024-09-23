@@ -3,73 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Are You Still Angry?</title>
+    <title>Anger Question</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            margin: 0;
-            overflow: hidden;
+            position: relative;
         }
-
-        h1 {
+        .container {
             text-align: center;
-        }
-
-        #yes-button {
+            background: white;
             padding: 20px;
-            font-size: 20px;
-            color: white;
-            background-color: red;
-            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
-            position: absolute;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #gifContainer {
+            display: none; /* Initially hidden */
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-
-    <h1>Are you still angry?</h1>
-    <button id="yes-button">Yes</button>
+    <div class="container">
+        <h2 id="question">Are you still angry?</h2>
+        <button id="yesButton" onmouseover="moveButton()">Yes</button>
+        <button id="noButton" onclick="handleResponse('No')">No</button>
+        <div id="gifContainer">
+            <img src="GIPHY5.webp" alt="GIF" />
+        </div>
+    </div>
 
     <script>
-        const button = document.getElementById('yes-button');
-        
-        // Function to detect if the user is on a mobile device
-        function isMobileDevice() {
-            return 'ontouchstart' in document.documentElement;
+        function handleResponse(answer) {
+            if (answer === 'No') {
+                // Hide buttons and change question
+                document.getElementById('yesButton').style.display = 'none';
+                document.getElementById('noButton').style.display = 'none';
+                document.getElementById('question').innerText = "Are you sure you are not angry?";
+                
+                // Show new buttons after 0.1 seconds
+                setTimeout(() => {
+                    showNewButtons();
+                }, 100);
+            } else {
+                showGif(); // Show GIF for "Yes" response
+            }
         }
 
-        // Function to move the button randomly
-        function moveButtonRandomly() {
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
+        function showNewButtons() {
+            const container = document.querySelector('.container');
+            const newYesButton = document.createElement('button');
+            const newNoButton = document.createElement('button');
 
-            const randomX = Math.random() * (screenWidth - button.offsetWidth);
-            const randomY = Math.random() * (screenHeight - button.offsetHeight);
+            newYesButton.innerText = "Yes";
+            newNoButton.innerText = "No";
 
+            newYesButton.onclick = () => showGif(); // Show GIF on new "Yes" button click
+            newNoButton.onclick = () => handleFinalResponse();
+
+            newNoButton.onmouseover = moveNoButton; // Make "No" button move randomly
+
+            container.appendChild(newYesButton);
+            container.appendChild(newNoButton);
+        }
+
+        function handleFinalResponse() {
+            alert("You selected: No");
+        }
+
+        function moveButton() {
+            const button = document.getElementById('yesButton');
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+
+            const randomX = Math.random() * (containerRect.width - button.offsetWidth);
+            const randomY = Math.random() * (containerRect.height - button.offsetHeight);
+
+            button.style.position = 'absolute';
             button.style.left = `${randomX}px`;
             button.style.top = `${randomY}px`;
         }
 
-        // Mobile device behavior
-        if (isMobileDevice()) {
-            button.addEventListener('touchstart', function () {
-                button.textContent = 'No';
-                button.style.backgroundColor = 'green';
-            });
-        } 
-        // Laptop/Desktop behavior
-        else {
-            button.addEventListener('mouseover', function () {
-                moveButtonRandomly();
-            });
+        function moveNoButton() {
+            const button = document.querySelector('button:last-child'); // Get the last button (No)
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+
+            const randomX = Math.random() * (containerRect.width - button.offsetWidth);
+            const randomY = Math.random() * (containerRect.height - button.offsetHeight);
+
+            button.style.position = 'absolute';
+            button.style.left = `${randomX}px`;
+            button.style.top = `${randomY}px`;
+        }
+
+        function showGif() {
+            document.getElementById('gifContainer').style.display = 'block'; // Show GIF
+            // Hide all buttons after showing the GIF
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => button.style.display = 'none');
         }
     </script>
-
 </body>
 </html>
